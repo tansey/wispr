@@ -1,0 +1,63 @@
+
+<!doctype html>
+<head>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            alert(JSON.stringify({
+                        latitude: Math.random() * 200 - 100,
+                        longitude: Math.random() * 200 - 100,
+                        whisper: "asfxvsfsfskjsfkjsfkjksfjksajfksjfksajfkajfkjasfsfkjkwjfkjsfkjskfjskfjksjfksjfksj"
+                      }));
+            $('#testlink').click(function(e){
+                e.preventDefault();
+                for(var i = 0; i < 500; i++){
+                    $.ajax({
+                      type: 'POST',
+                      url: '/upload_geoaudio',
+                      contentType: 'application/json',
+                      data: JSON.stringify({
+                        latitude: Math.random() * 200 - 100,
+                        longitude: Math.random() * 200 - 100,
+                        whisper: "asfxvsfsfskjsfkjsfkjksfjksajfksjfksajfkajfkjasfsfkjkwjfkjsfkjskfjskfjksjfksjfksj"
+                      }),
+                      success: function(data){
+                        //alert("YES!");
+                        //$("#results").text(data);
+                      },
+                      error: function(data){
+                        //alert("Something went wrong: " + data);
+                      },
+                      dataType: "text"
+                    });
+                }
+            });
+
+            $('#testnear').click(function(e){
+                e.preventDefault();
+                $.ajax({
+                  type: 'POST',
+                  url: '/near_points',
+                  contentType: 'application/json',
+                  data: JSON.stringify({
+                    longitude: 40,
+                    latitude: 40
+                  }),
+                  success: function(data){
+                    alert("YES!");
+                    $("#results").text(data);
+                  },
+                  error: function(data){
+                    alert("Something went wrong: " + data);
+                  },
+                  dataType: "json"
+                });
+            });
+
+        });
+    </script>
+</head>
+<title>Test the app</title>
+<a id="testlink" href="#">Add random point.</a>
+<a id="testnear" href="#">Get near points.</a>
+<div id="results"></div>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head profile="http://www.w3.org/2005/10/profile">
+    <link rel="icon" 
+          type="image/ico" 
+          href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+      #explore-button {
+        border-radius:2px;border-width:1px;border-style:solid;padding:10px;border-color:#DADADA;
+      }
+      #explore-button:hover{
+        border-color:black;
+        color: black;
+      }
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=true&key={{ google_maps_key }}">
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='circle.skin/circle.player.css') }}">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/infobox.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/map_helper.js') }}"></script>
+
+    <script type="text/javascript">
+    
+
+    var curPos;
+    var map;
+    var markersArray = [];
+    var boxes = [];
+    function setMarkers (data) {
+      clearOverlays(markersArray);
+      clearOverlays(boxes);
+      markersArray = [];
+      boxes = [];
+      for (var i = 0; i < data.length; i++) {
+          var position = new google.maps.LatLng(
+              data[i]['lat'], data[i]['lng']);
+          var marker = new google.maps.Marker({
+            position: position,
+            map: map
+          });
+          attachMessage(marker, data[i]['link'], boxes);
+          markersArray.push(marker);
+        }
+        addClosingOthers(markersArray, boxes);
+    }
+
+      function initialize() {
+        var examples = [{link: "player.htm", lng: -25.89438, lat: 12.12390}, 
+          {link: "player.htm", lng: -25.8912880, lat: 12.8995},
+          {link: "player.htm", lng: -25.4352132, lat: 12.095}];
+
+        var mapOptions = {
+          zoom: 7,
+          center: new google.maps.LatLng(-25.363882, 12.044922),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };        
+        map = new google.maps.Map(document.getElementById('map_canvas'),
+            mapOptions);
+
+
+        map.setOptions({styles:styles});
+
+
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = new google.maps.LatLng(position.coords.latitude,
+                                             position.coords.longitude);
+
+            map.setCenter(pos);
+
+            $.ajax({
+              type: 'POST',
+              url: '/near_points',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              }),
+              success: function(data){
+                setMarkers(data.items);
+              },
+              error: function(data){
+                alert("Something went wrong: " + data);
+              },
+              dataType: "json"
+            });
+          }, function() {
+            handleNoGeolocation(true, map);
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleNoGeolocation(false, map);
+        }
+      
+        
+          google.maps.event.addListener(map, 'dragend', function() {
+            $.ajax({
+              type: 'POST',
+              url: '/near_points',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                latitude: map.getCenter().lat(),
+                longitude: map.getCenter().lng()
+              }),
+              success: function(data){
+                setMarkers(data.items);
+              },
+              error: function(data){
+                alert("Something went wrong: " + data);
+              },
+              dataType: "json"
+            });
+
+        });
+
+          google.maps.event.addListener(map, 'zoom', function() {
+            $.ajax({
+              type: 'POST',
+              url: '/near_points',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                latitude: map.getCenter().lat(),
+                longitude: map.getCenter().lng()
+              }),
+              success: function(data){
+                setMarkers(data.items);
+              },
+              error: function(data){
+                alert("Something went wrong: " + data);
+              },
+              dataType: "json"
+            });
+        });
+
+
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+  </script>
+  </head>
+  <body>
+
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+  <script type="text/javascript">
+  $(document).ready(function() {  
+    var id = '#dialog';
+    //Get the screen height and width
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+  
+    //Set heigth and width to mask to fill up the whole screen
+    $('#mask').css({'width':maskWidth,'height':maskHeight});
+    
+    //transition effect 
+    $('#mask').fadeIn(1000);  
+    $('#mask').fadeTo("slow",0.8);  
+  
+    //Get the window height and width
+    var winH = $(window).height();
+    var winW = $(window).width();
+              
+    //Set the popup window to center
+    $(id).css('top',  winH/2-$(id).height()/2);
+    $(id).css('left', winW/2-$(id).width()/2);
+  
+    //transition effect
+    $(id).fadeIn(2000);   
+  
+  //if close button is clicked
+  $('.window .close').click(function (e) {
+    //Cancel the link behavior
+    e.preventDefault();    
+    $('#mask').hide();
+    $('.window').hide();
+  });   
+});
+
+</script>
+</head><body>
+
+<div id="boxes">
+  <div style="top: 199.5px; left: 551.5px; display: none; border-radius: 20px;" id="dialog" class="window">
+    <div>
+      <img style="text-align:center;" src="{{ url_for('static', filename='images/logo.png') }}"/>
+      <span style="float:right; font-style:italic;"><small>Listen to your world</small></span> 
+    </div>
+    <div style="text-align:center;padding-top:30px;">
+      <a id="explore-button" href="#" class="close">Explore</a>
+    </div>
+  </div>
+  <!-- Mask to cover the whole screen -->
+  <div style="width: 1478px; height: 602px; display: none; opacity: 0.8;" id="mask"></div>
+</div>
+
+
+
+  </body>
+</html>

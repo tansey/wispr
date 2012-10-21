@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" style="border-radius:70px;">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width; initial-scale=1.5; user-scalable=no;">
+		<title>My first sound</title>
+
+		<link rel="stylesheet" href="{{ url_for('static', filename='circle.skin/circle.player.css') }}">
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.transform2d.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.grab.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.jplayer.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/mod.csstransforms.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/circle.player.js') }}"></script>
+		
+		<script type="text/javascript">
+		$(document).ready(function(){
+
+			var myCirclePlayer = new CirclePlayer("#jquery_jplayer_1",
+			{
+				m4a: "{{ filename }}",
+				oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
+			}, {
+				cssSelectorAncestor: "#cp_container_1"
+			});
+
+		});
+		</script>
+	</head>
+	<body style="background:#8FC4BC">
+		<div id="name1" class="name">
+			<!--<caption> My first sound </caption>-->
+	</div>
+
+		<!-- The jPlayer div must not be hidden. Keep it at the root of the body element to avoid any such problems. -->
+		<div id="jquery_jplayer_1" class="cp-jplayer"></div>
+			<div id="cp_container_1" class="cp-container">
+				<div class="cp-buffer-holder"> <!-- .cp-gt50 only needed when buffer is > than 50% -->
+					<div class="cp-buffer-1"></div>
+					<div class="cp-buffer-2"></div>
+				</div>
+				<div class="cp-progress-holder"> <!-- .cp-gt50 only needed when progress is > than 50% -->
+					<div class="cp-progress-1"></div>
+					<div class="cp-progress-2"></div>
+				</div>
+				<div class="cp-circle-control"></div>
+				<ul class="cp-controls">
+					<li><a class="cp-play" tabindex="1">play</a></li>
+					<li><a class="cp-pause" style="display:none;" tabindex="1">pause</a></li> 
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
