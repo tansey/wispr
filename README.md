@@ -16,11 +16,11 @@ The demo is available [here](wisprly.herokuapp.com).
 
 What is it built on?
 --------------------
-Python, Flask, Heroku, JS, and Android. Currently using the Google Maps API.
+Python, Flask, Heroku, JS, Android, and the Google Maps API.
 
 Contributors
 ------------
-[Wesley Tansey](https://github.com/tansey) (Backend)
-[Eliana Feasley](https://github.com/elifeasley) (Frontend)
-Craig Corcoran (Android app)
-Blake Messer (Android app)
+- [Wesley Tansey](https://github.com/tansey) (Backend)
+- [Eliana Feasley](https://github.com/elifeasley) (Frontend)
+- Craig Corcoran (Android app)
+- Blake Messer (Android app)
